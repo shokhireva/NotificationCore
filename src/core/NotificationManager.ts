@@ -19,4 +19,25 @@ export class NotificationManager {
         this.notifications.push(notification);
         return notification;
     }
+
+    public getNotifications(): readonly Notification[] {
+        return this.notifications;
+    }   
+
+    public getById(id: NotificationId): Notification | undefined {
+        return this.notifications.find(notification => notification.id === id);
+    }
+
+    public remove(id: NotificationId): boolean {
+        const index = this.notifications.findIndex(notification => notification.id === id);
+        if (index === -1) {
+            return false;
+        }
+        this.notifications.splice(index, 1);
+        return true;
+    }
+    
+    public clear(): void {
+        this.notifications = [];
+    }
 }
