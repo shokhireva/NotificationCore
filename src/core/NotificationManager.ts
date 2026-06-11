@@ -2,6 +2,7 @@ import type { NotificationId } from "../types/NotificationId.js";
 import type { NotificationOptions } from "../types/NotificationOptions.js";
 import type { Notification } from "../types/Notification.js";
 import { NotificationPriority } from "../types/NotificationPriority.js";
+import type { NotificationEvent } from "../types/NotificationEvent.js";
 
 export class NotificationManager {
     private notifications: Notification[] = [];
@@ -12,6 +13,21 @@ export class NotificationManager {
         this.nextId++;
         return id;
     }
+
+    private listeners = new Map<NotificationEvent, ((notification: Notification) => void)[]>();
+
+    private emit( event: NotificationEvent, notification: Notification): void {
+    const listeners = this.listeners.get(event);
+
+        if (!listeners) {
+            return;
+        }
+
+        for (const listener of listeners) {
+            listener(notification);
+        }
+    }
+
     public show(options: NotificationOptions): Notification{
         const notification:Notification = {
             id:this.generateId(),
@@ -92,6 +108,31 @@ export class NotificationManager {
 
     public hasNotifications(): boolean {
         return this.notifications.length > 0;
+    }
+
+    public subscribe(event: NotificationEvent, listener: (notification: Notification) => void): void {
+        const listeners = this.listeners.get(event);
+
+        if (listeners) {
+            listeners.push(listener);
+            return;
+        }
+
+        this.listeners.set(event, [listener]);
+    }
+
+    public unsubscribe(event: NotificationEvent, listener: (notification: Notification) => void): void {
+        const listeners = this.listeners.get(event);
+        if (!listeners) {
+            return;
+        }
+
+        this.listeners.set(
+            event,
+            listeners.filter(
+                currentListener => currentListener !== listener
+            )
+        );
     }
 
 
