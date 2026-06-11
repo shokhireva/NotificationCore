@@ -9,4 +9,6 @@ export interface Notification {
     title?:string;
     type:NotificationType;
     priority:NotificationPriority;
+    duration?: number;
+    createdAt: Date;
 }
