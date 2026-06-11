@@ -14,6 +14,7 @@ export class NotificationManager {
     public show(options: NotificationOptions): Notification{
         const notification:Notification = {
             id:this.generateId(),
+            createdAt: new Date(),
             ...options
         }
         this.notifications.push(notification);
@@ -40,4 +41,29 @@ export class NotificationManager {
     public clear(): void {
         this.notifications = [];
     }
+
+    public getExpiredNotifications(): Notification[] {
+        return this.notifications.filter(notification => {
+            if (notification.duration === undefined) {
+                return false;
+            }
+
+            return (Date.now() - notification.createdAt.getTime() > notification.duration);
+        });
+}
+    
+    public removeExpired(): number {
+        const initialLength = this.notifications.length;
+
+        this.notifications = this.notifications.filter(notification => {
+            if (notification.duration === undefined) {
+                return true;
+            }
+
+            return (Date.now() - notification.createdAt.getTime()<= notification.duration);
+        });
+
+        return initialLength - this.notifications.length;
+    }
+
 }
