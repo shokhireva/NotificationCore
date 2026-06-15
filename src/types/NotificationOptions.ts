@@ -6,5 +6,5 @@ export interface NotificationOptions {
     title?: string;
     type: NotificationType;
     priority: NotificationPriority;
-    duratiun?: number;
+    duration?: number;
 }
