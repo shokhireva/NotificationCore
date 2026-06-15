@@ -23,6 +23,11 @@ export class NotificationService {
         this.container.append(element);
         this.elements.set(notification.id, element);
 
+        if (notification.duration !== undefined) { 
+            setTimeout(() => 
+                { this.remove(notification.id);}, notification.duration);
+        }
+
         return notification;
     }
 
