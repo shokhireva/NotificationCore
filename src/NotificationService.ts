@@ -88,4 +88,34 @@ export class NotificationService {
 
         return false;
     }
+
+    private animateIn(element: HTMLElement, container: HTMLElement): Promise<void> {
+        return new Promise((resolve) => {
+            element.classList.add('notification-enter');
+            container.appendChild(element);
+            
+            void element.offsetHeight;
+            element.classList.add('notification-enter-active');
+            const onEnd = () => {
+                element.classList.remove('notification-enter', 'notification-enter-active');
+                element.removeEventListener('transitionend', onEnd);
+                resolve();
+            };
+            element.addEventListener('transitionend', onEnd, { once: true });
+        });
+    }
+
+    private animateOut(element: HTMLElement): Promise<void> {
+        return new Promise((resolve) => {
+            element.classList.add('notification-exit');
+            void element.offsetHeight;
+            element.classList.add('notification-exit-active');
+            const onEnd = () => {
+                element.remove();
+                element.removeEventListener('transitionend', onEnd);
+                resolve();
+            };
+            element.addEventListener('transitionend', onEnd, { once: true });
+        });
+    }
 }
