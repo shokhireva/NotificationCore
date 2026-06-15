@@ -24,5 +24,24 @@ export class NotificationService {
         this.elements.set(notification.id, element);
 
         return notification;
-}
+    }
+
+    public remove(id: NotificationId): boolean {
+        const element = this.elements.get(id);
+
+        if (!element) {
+            return false;
+        }
+
+        const removed = this.manager.remove(id);
+
+        if (!removed) {
+            return false;
+        }
+
+        this.renderer.remove(element);
+        this.elements.delete(id);
+
+        return true;
+    }
 }
