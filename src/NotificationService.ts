@@ -3,6 +3,7 @@ import { NotificationRenderer } from "./ui/NotificationRenderer.js";
 import { NotificationContainer } from "./ui/NotificationContainer.js";
 import { NotificationPriority } from "./types/NotificationPriority.js";
 
+import type { Position } from "./types/Position.js";
 import type { Notification } from "./types/Notification.js";
 import type { NotificationId } from "./types/NotificationId.js";
 import type { NotificationOptions } from "./types/NotificationOptions.js";
@@ -10,12 +11,16 @@ import type { NotificationOptions } from "./types/NotificationOptions.js";
 export class NotificationService {
     private manager = new NotificationManager();
     private renderer = new NotificationRenderer();
-    private container = new NotificationContainer();
+    private container: NotificationContainer;
 
     private elements = new Map<
         NotificationId,
         HTMLElement
     >();
+
+      public constructor(position: Position = 'bottom-right') {
+        this.container = new NotificationContainer(position);
+    }
 
     private maxVisible = 3;        
     private visibleCount = 0;     
