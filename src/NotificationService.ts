@@ -22,6 +22,10 @@ export class NotificationService {
         this.container = new NotificationContainer(position);
     }
 
+    public setPosition(position: Position): void {
+        this.container.setPosition(position);
+    }
+
     private maxVisible = 3;        
     private visibleCount = 0;     
     private waiting: Notification[] = []; 
