@@ -21,6 +21,9 @@ export class NotificationService {
     private visibleCount = 0;     
     private waiting: Notification[] = []; 
 
+    private timers = new Map<NotificationId, ReturnType<typeof setTimeout>>();
+    private removingIds = new Set<NotificationId>();
+
     private addToWaiting(notification: Notification): void {
         if (notification.priority === NotificationPriority.Important) {
             const firstNormalIndex = this.waiting.findIndex(
@@ -36,16 +39,18 @@ export class NotificationService {
         }
     }
 
-    private renderNotification(notification: Notification): void {
+    private async renderNotification(notification: Notification): Promise<void> {
         const element = this.renderer.render(notification);
-        this.container.append(element);
         this.elements.set(notification.id, element);
         this.visibleCount++;
+        await this.animateIn(element, this.container.getElement());
 
         if (notification.duration !== undefined) {
-            setTimeout(() => {
+            const timer = setTimeout(() => {
                 this.remove(notification.id);
             }, notification.duration);
+
+            this.timers.set(notification.id, timer);
         }
     }
 
@@ -56,6 +61,8 @@ export class NotificationService {
         }
     }
 
+
+
     public show(options: NotificationOptions): Notification {
         const notification = this.manager.show(options);
         this.addToWaiting(notification);
@@ -63,29 +70,75 @@ export class NotificationService {
         return notification;
     }
 
-    public remove(id: NotificationId): boolean {
+    public async remove(id: NotificationId): Promise<boolean> {
+        if (this.removingIds.has(id)) return false;
+        this.removingIds.add(id);
+
+        const timer = this.timers.get(id);
+        if (timer) {
+            clearTimeout(timer);
+            this.timers.delete(id);
+        }
+
         const element = this.elements.get(id);
         if (element) {
             const removed = this.manager.remove(id);
-            if (!removed) return false;
+            if (!removed) {
+                this.removingIds.delete(id);
+                return false;
+            }
 
-            this.renderer.remove(element);
+            await this.animateOut(element);
             this.elements.delete(id);
             this.visibleCount--;
+            this.removingIds.delete(id);
             this.tryShowNext();
             return true;
         }
 
         const waitingIndex = this.waiting.findIndex(n => n.id === id);
         if (waitingIndex !== -1) {
-            const notification = this.waiting[waitingIndex];
             const removed = this.manager.remove(id);
             if (removed) {
                 this.waiting.splice(waitingIndex, 1);
             }
+
+            this.removingIds.delete(id);
+            
             return removed;
         }
 
+        this.removingIds.delete(id);
         return false;
+    }
+
+    private animateIn(element: HTMLElement, container: HTMLElement): Promise<void> {
+        return new Promise((resolve) => {
+            element.classList.add('notification-enter');
+            container.appendChild(element);
+            
+            void element.offsetHeight;
+            element.classList.add('notification-enter-active');
+            const onEnd = () => {
+                element.classList.remove('notification-enter', 'notification-enter-active');
+                element.removeEventListener('transitionend', onEnd);
+                resolve();
+            };
+            element.addEventListener('transitionend', onEnd, { once: true });
+        });
+    }
+
+    private animateOut(element: HTMLElement): Promise<void> {
+        return new Promise((resolve) => {
+            element.classList.add('notification-exit');
+            void element.offsetHeight;
+            element.classList.add('notification-exit-active');
+            const onEnd = () => {
+                element.remove();
+                element.removeEventListener('transitionend', onEnd);
+                resolve();
+            };
+            element.addEventListener('transitionend', onEnd, { once: true });
+        });
     }
 }
