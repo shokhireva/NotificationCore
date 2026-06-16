@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NotificationCore Demo</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="controls">
+    <h1>🔔 NotificationCore</h1>
+    <div class="subtitle">Библиотека всплывающих уведомлений</div>
+
+    <div class="row">
+        <button class="btn btn-success" id="btn-success">✅ Успех</button>
+        <button class="btn btn-danger" id="btn-error">❌ Ошибка</button>
+        <button class="btn btn-info" id="btn-info">ℹ️ Инфо</button>
+    </div>
+    <div class="row">
+        <button class="btn btn-important" id="btn-important">⭐ Важное</button>
+        <button class="btn btn-primary" id="btn-many">📦 Показать 5</button>
+        <button class="btn btn-secondary" id="btn-clear">🗑️ Очистить все</button>
+    </div>
+
+    <div class="row" style="align-items: center; justify-content: center;">
+        <label for="position-select">Позиция:</label>
+        <select id="position-select">
+            <option value="bottom-right">Снизу справа</option>
+            <option value="bottom-left">Снизу слева</option>
+            <option value="top-right">Сверху справа</option>
+            <option value="top-left">Сверху слева</option>
+            <option value="bottom-center">Снизу по центру</option>
+            <option value="top-center">Сверху по центру</option>
+        </select>
+        <span class="counter" id="counter">0 видимых</span>
+    </div>
+
+    <p class="hint">Одновременно не более 3 уведомлений. Важные обгоняют очередь.</p>
+</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "notification-core": "../dist/index.js"
+    }
+}
+</script>
+
+<script type="module">
+    import { NotificationService } from '../dist/NotificationService.js';
+    import { NotificationType } from '../dist/types/NotificationType.js';
+    import { NotificationPriority } from '../dist/types/NotificationPriority.js';
+
+    let position = 'bottom-right';
+    const service = new NotificationService(position);
+
+    const select = document.getElementById('position-select');
+    const counter = document.getElementById('counter');
+
+    function updateCounter() {
+        const count = service.getVisibleCount ? service.getVisibleCount() : 0;
+        counter.textContent = `${count} видимых`;
+    }
+
+    select.addEventListener('change', () => {
+        position = select.value;
+        service.setPosition(position);
+        updateCounter();
+    });
+
+    document.getElementById('btn-success').onclick = () => {
+        service.show({
+            message: 'Операция завершена успешно!',
+            title: 'Успех',
+            type: NotificationType.Success,
+            priority: NotificationPriority.Default,
+            duration: 3000
+        });
+        updateCounter();
+    };
+
+    document.getElementById('btn-error').onclick = () => {
+        service.show({
+            message: 'Произошла ошибка при загрузке данных.',
+            title: 'Ошибка',
+            type: NotificationType.Error,
+            priority: NotificationPriority.Default,
+            duration: 4000
+        });
+        updateCounter();
+    };
+
+    document.getElementById('btn-info').onclick = () => {
+        service.show({
+            message: 'Доступно новое обновление версии 2.3.0.',
+            title: 'Информация',
+            type: NotificationType.Info,
+            priority: NotificationPriority.Default,
+            duration: 3000
+        });
+        updateCounter();
+    };
+
+    document.getElementById('btn-important').onclick = () => {
+        service.show({
+            message: 'Критическая ошибка! Требуется вмешательство администратора.',
+            title: '⚠️ ВАЖНО',
+            type: NotificationType.Error,
+            priority: NotificationPriority.Important,
+            duration: 6000
+        });
+        updateCounter();
+    };
+
+    document.getElementById('btn-many').onclick = () => {
+        for (let i = 1; i <= 5; i++) {
+            setTimeout(() => {
+                service.show({
+                    message: `Сообщение #${i} с текстом для проверки очереди.`,
+                    title: `Уведомление ${i}`,
+                    type: i % 2 === 0 ? NotificationType.Info : NotificationType.Success,
+                    priority: i === 3 ? NotificationPriority.Important : NotificationPriority.Default,
+                    duration: 4000
+                });
+                updateCounter();
+            }, i * 200);
+        }
+    };
+
+    document.getElementById('btn-clear').onclick = async () => {
+        const notifications = service['manager'].getNotifications();
+        const ids = notifications.map(n => n.id);
+        for (const id of ids) {
+            await service.remove(id);
+            updateCounter();
+        }
+        updateCounter();
+    };
+
+    setInterval(updateCounter, 500);
+</script>
+
+</body>
+</html>

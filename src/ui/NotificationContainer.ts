@@ -13,8 +13,10 @@ export class NotificationContainer {
     }
 
     private updatePositionClass(): void {
-        const positions: Position[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right',
-            'top-center', 'bottom-center'];
+        const positions: Position[] = [
+            'top-left', 'top-right', 'bottom-left', 'bottom-right',
+            'top-center', 'bottom-center'
+        ];
         for (const pos of positions) {
             this.element.classList.remove(`notification-container--${pos}`);
         }
@@ -25,10 +27,15 @@ export class NotificationContainer {
         return this.element;
     }
 
-    public setPosition(position: Position): void {
-        this.position = position;
-        this.updatePositionClass();
+    public addNotification(notificationElement: HTMLElement): void {
+        const isTop = this.position.startsWith('top');
+        if (isTop) {
+            this.element.prepend(notificationElement);
+        } else {
+            this.element.append(notificationElement);
+        }
     }
+
 
     public append(notificationElement: HTMLElement): void {
         this.element.append(notificationElement);
@@ -36,5 +43,10 @@ export class NotificationContainer {
 
     public remove(notificationElement: HTMLElement): void {
         notificationElement.remove();
+    }
+
+    public setPosition(position: Position): void {
+        this.position = position;
+        this.updatePositionClass();
     }
 }

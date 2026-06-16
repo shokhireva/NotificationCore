@@ -18,12 +18,16 @@ export class NotificationService {
         HTMLElement
     >();
 
-      public constructor(position: Position = 'bottom-right') {
+    public constructor(position: Position = 'bottom-right') {
         this.container = new NotificationContainer(position);
     }
 
     public setPosition(position: Position): void {
         this.container.setPosition(position);
+    }
+
+    public getVisibleCount(): number {
+        return this.elements.size;
     }
 
     private maxVisible = 3;        
@@ -52,7 +56,7 @@ export class NotificationService {
         const element = this.renderer.render(notification);
         this.elements.set(notification.id, element);
         this.visibleCount++;
-        await this.animateIn(element, this.container.getElement());
+        await this.animateIn(element, this.container);
 
         if (notification.duration !== undefined) {
             const timer = setTimeout(() => {
@@ -121,11 +125,10 @@ export class NotificationService {
         return false;
     }
 
-    private animateIn(element: HTMLElement, container: HTMLElement): Promise<void> {
+    private animateIn(element: HTMLElement, container: NotificationContainer): Promise<void> {
         return new Promise((resolve) => {
             element.classList.add('notification-enter');
-            container.appendChild(element);
-            
+            container.addNotification(element);
             void element.offsetHeight;
             element.classList.add('notification-enter-active');
             const onEnd = () => {
