@@ -64,6 +64,13 @@ body {
 .btn-primary:hover { background: #b8daff; }
 .btn-secondary { background: #e2e3e5; color: #383d41; }
 .btn-secondary:hover { background: #d6d8db; }
+.btn-custom {
+    background: #e8d5f5;
+    color: #6a1b9a;
+}
+.btn-custom:hover {
+    background: #d4b8e8;
+}
 
 select {
     padding: 8px 14px;
@@ -100,6 +107,8 @@ label { font-weight: 500; margin-right: 8px; }
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-left: 5px solid #6c757d;
     position: relative;
+    height: auto;
+    overflow: visible;
 }
 .notification--success { border-left-color: #28a745; background: #f1f9f0; }
 .notification--error { border-left-color: #dc3545; background: #fdf0f0; }
@@ -114,22 +123,58 @@ label { font-weight: 500; margin-right: 8px; }
     color: #212529;
 }
 
-/* Анимации */
+/* Кастомный класс для демонстрации */
+.my-custom-class {
+    background: #f3e5f5 !important;
+    border-left-color: #9c27b0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 30px rgba(156, 39, 176, 0.3) !important;
+    font-family: 'Comic Sans MS', cursive, sans-serif !important;
+}
+.my-custom-class .notification__title {
+    color: #6a1b9a;
+    font-size: 18px;
+}
+.my-custom-class .notification__message {
+    color: #4a148c;
+    font-style: italic;
+}
+
+
 .notification-enter {
     opacity: 0;
     transform: translateX(30px) scale(0.96);
+    max-height: 0;
+    padding: 0 18px;
+    margin: 0;
+    overflow: hidden;
 }
 .notification-enter-active {
     opacity: 1;
     transform: translateX(0) scale(1);
+    max-height: 200px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    overflow: visible;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .notification-exit {
     opacity: 1;
     transform: translateX(0) scale(1);
+    max-height: 200px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    overflow: visible;
 }
 .notification-exit-active {
     opacity: 0;
     transform: translateX(30px) scale(0.96);
+    max-height: 0;
+    padding: 0 18px;
+    margin: 0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 

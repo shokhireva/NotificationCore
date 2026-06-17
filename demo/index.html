@@ -16,6 +16,7 @@
         <button class="btn btn-success" id="btn-success">✅ Успех</button>
         <button class="btn btn-danger" id="btn-error">❌ Ошибка</button>
         <button class="btn btn-info" id="btn-info">ℹ️ Инфо</button>
+        <button class="btn btn-custom" id="btn-custom">🎨 Кастом</button>
     </div>
     <div class="row">
         <button class="btn btn-important" id="btn-important">⭐ Важное</button>
@@ -98,6 +99,18 @@
             type: NotificationType.Info,
             priority: NotificationPriority.Default,
             duration: 3000
+        });
+        updateCounter();
+    };
+
+    document.getElementById('btn-custom').onclick = () => {
+        service.show({
+            message: 'Это уведомление с кастомным стилем!',
+            title: '🎨 Кастом',
+            type: NotificationType.Success,
+            priority: NotificationPriority.Default,
+            duration: 4000,
+            className: 'my-custom-class'
         });
         updateCounter();
     };
