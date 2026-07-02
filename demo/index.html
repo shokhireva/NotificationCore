@@ -9,19 +9,19 @@
 <body>
 
 <div class="controls">
-    <h1>🔔 NotificationCore</h1>
+    <h1>NotificationCore</h1>
     <div class="subtitle">Библиотека всплывающих уведомлений</div>
 
     <div class="row">
-        <button class="btn btn-success" id="btn-success">✅ Успех</button>
-        <button class="btn btn-danger" id="btn-error">❌ Ошибка</button>
-        <button class="btn btn-info" id="btn-info">ℹ️ Инфо</button>
-        <button class="btn btn-custom" id="btn-custom">🎨 Кастом</button>
+        <button class="btn btn-success" id="btn-success">Успех</button>
+        <button class="btn btn-danger" id="btn-error">Ошибка</button>
+        <button class="btn btn-info" id="btn-info">Инфо</button>
+        <button class="btn btn-custom" id="btn-custom">Кастом</button>
     </div>
     <div class="row">
-        <button class="btn btn-important" id="btn-important">⭐ Важное</button>
-        <button class="btn btn-primary" id="btn-many">📦 Показать 5</button>
-        <button class="btn btn-secondary" id="btn-clear">🗑️ Очистить все</button>
+        <button class="btn btn-important" id="btn-important">Важное</button>
+        <button class="btn btn-primary" id="btn-many">Показать 5</button>
+        <button class="btn btn-secondary" id="btn-clear">Очистить все</button>
     </div>
 
     <div class="row" style="align-items: center; justify-content: center;">
@@ -106,7 +106,7 @@
     document.getElementById('btn-custom').onclick = () => {
         service.show({
             message: 'Это уведомление с кастомным стилем!',
-            title: '🎨 Кастом',
+            title: 'Кастом',
             type: NotificationType.Success,
             priority: NotificationPriority.Default,
             duration: 4000,
